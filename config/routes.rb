@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 		member do
 			post 'create'
 			get 'update_location'
+			get 'report_user'
 		end
 	end
 end

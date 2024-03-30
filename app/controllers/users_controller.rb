@@ -27,6 +27,24 @@ class UsersController < ApplicationController
 		end
 	end
 
+	def report_user
+		if User.where(id: params[:id]).any?
+			user = User.find(params[:id])
+
+			if ReportInfection.where(user_id: user.id, whistleblower_id: params[:whistleblower_id]).empty?
+				if ReportInfection.new(user_id: user.id, whistleblower_id: params[:whistleblower_id]).save
+					render json: user, status: :ok
+				else
+					render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+				end
+			else
+				render json: { error: "Your report to this user has already been made." }, status: :unprocessable_entity
+			end
+		else
+			render json: { error: "User not found" }, status: :not_found
+		end
+	end
+
 	private
 
 	def user_params
