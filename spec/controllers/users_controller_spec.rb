@@ -6,13 +6,13 @@ RSpec.describe UsersController, type: :controller do
 			let(:valid_params) do
 				{
 					user: {
-						name: 'John Doe',
+						name: 'Fulano',
 						age: 30,
 						gender: 'male',
-						latitude: 123.456,
-						longitude: 456.789,
+						latitude: 123.123,
+						longitude: 321.321,
 						health: 'healthy',
-						username: 'johndoe',
+						username: 'fulano',
 						encrypted_password: 'password'
 					}
 				}
@@ -25,7 +25,7 @@ RSpec.describe UsersController, type: :controller do
 		end
 
 		context 'with invalid parameters' do
-			let(:invalid_params) { { user: { name: '', age: 30 } } }
+			let(:invalid_params) { { user: { username: '', age: 30 } } }
 
 			it 'does not create a new user' do
 				post :create, params: invalid_params
@@ -35,7 +35,7 @@ RSpec.describe UsersController, type: :controller do
 	end
 
 	describe 'PATCH #update_location' do
-		let!(:user) { User.create(name: 'John', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'john', encrypted_password: 'password') }
+		let!(:user) { User.create(name: 'Cicrano', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'cicrano', encrypted_password: 'password') }
 
 		context 'with valid parameters' do
 			let(:valid_params) { { id: user.id, user: { latitude: 123.456, longitude: 456.789 } } }
@@ -49,9 +49,18 @@ RSpec.describe UsersController, type: :controller do
 		context 'with invalid parameters' do
 			let(:invalid_params) { { id: user.id, user: { latitude: '', longitude: '' } } }
 
-			it 'does not update the user location' do
+			it 'does not update the user location because invalid data' do
 				patch :update_location, params: invalid_params
 				expect(response).to have_http_status(:unprocessable_entity)
+			end
+		end
+
+		context 'with invalid user' do
+			let(:invalid_params) { { id: 999, user: { latitude: '', longitude: '' } } }
+
+			it 'does not update the user location because invalid user' do
+				patch :update_location, params: invalid_params
+				expect(response).to have_http_status(:not_found)
 			end
 		end
 	end
