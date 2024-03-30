@@ -1,5 +1,3 @@
-# app/controllers/users_controller.rb
-
 class UsersController < ApplicationController
   def create
     user = User.new(user_params)
