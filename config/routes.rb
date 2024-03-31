@@ -12,4 +12,8 @@ Rails.application.routes.draw do
 			get 'report_user'
 		end
 	end
+
+	# Routes for inventory
+	get '/add_item', to: 'inventory_movement#add_item'
+  get '/remove_item', to: 'inventory_movement#remove_item'
 end
