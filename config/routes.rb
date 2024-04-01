@@ -16,4 +16,5 @@ Rails.application.routes.draw do
 	# Routes for inventory
 	get '/add_item', to: 'inventory_movement#add_item'
   get '/remove_item', to: 'inventory_movement#remove_item'
+	get '/barter', to: 'inventory_movement#barter'
 end
