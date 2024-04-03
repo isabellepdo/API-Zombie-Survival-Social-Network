@@ -90,28 +90,36 @@ RSpec.describe InventoryMovementController, type: :controller do
 
 	describe 'POST #barter' do
 		context 'with valid JSON parameters and valid users/items' do
-			let!(:item1) { Item.create(name: 'Item1', points_for_barter: 4) }
-			let!(:item2) { Item.create(name: 'Item2', points_for_barter: 5) }
+			let!(:item1) { Item.create(name: 'Item1', points_for_barter: 1) }
+			let!(:item2) { Item.create(name: 'Item2', points_for_barter: 2) }
 			let!(:user1) { User.create(name: 'User1', username: 'user1', encrypted_password: 'password') }
 			let!(:user2) { User.create(name: 'User2', username: 'user2', encrypted_password: 'password') }
-			let!(:inventory_user1_item1) { Inventory.create(user_id: user1.id, item_id: item1.id, amount: 3) }
-			let!(:inventory_user1_item2) { Inventory.create(user_id: user1.id, item_id: item2.id, amount: 2) }
-			let!(:inventory_user2_item1) { Inventory.create(user_id: user2.id, item_id: item1.id, amount: 2) }
-			let!(:inventory_user2_item2) { Inventory.create(user_id: user2.id, item_id: item2.id, amount: 3) }
+			let(:valid_params_user1) do
+				{
+					user: 'user1',
+					item: 'Item1',
+					value: 3
+				}
+			end
+			let(:valid_params_user2) do
+				{
+					user: 'user2',
+					item: 'Item2',
+					value: 2
+				}
+			end
 			let(:valid_barter_params) do
 				{
 					users: [
 						{
 							username: 'user1',
 							items: [
-								{ name: 'Item1', amount: 1 },
-								{ name: 'Item2', amount: 1 }
+								{ name: 'Item1', amount: 2 }
 							]
 						},
 						{
 							username: 'user2',
 							items: [
-								{ name: 'Item1', amount: 1 },
 								{ name: 'Item2', amount: 1 }
 							]
 						}
@@ -125,12 +133,14 @@ RSpec.describe InventoryMovementController, type: :controller do
 			end
 	
 			it 'updates the inventories with the correct amounts after the barter' do
-				post :barter, body: valid_barter_params.to_json, format: :json
-	
-				expect(user1.inventories.find_by(item_id: item1.id).amount).to eq(2)
+				get :add_item, params: valid_params_user1, format: :json
+				get :add_item, params: valid_params_user2, format: :json
+				get :barter, body: valid_barter_params.to_json, format: :json
+				
+				expect(user1.inventories.find_by(item_id: item1.id).amount).to eq(1)
 				expect(user1.inventories.find_by(item_id: item2.id).amount).to eq(1)
-				expect(user2.inventories.find_by(item_id: item1.id).amount).to eq(3)
-				expect(user2.inventories.find_by(item_id: item2.id).amount).to eq(4)
+				expect(user2.inventories.find_by(item_id: item1.id).amount).to eq(2)
+				expect(user2.inventories.find_by(item_id: item2.id).amount).to eq(1)
 			end
 		end
 	
@@ -192,23 +202,32 @@ RSpec.describe InventoryMovementController, type: :controller do
 		end
 	
 		context 'when exchange does not satisfy points rules' do
+			let!(:item1) { Item.create(name: 'Item1', points_for_barter: 1) }
+			let!(:item2) { Item.create(name: 'Item2', points_for_barter: 4) }
+			let!(:user1) { User.create(name: 'User1', username: 'user1', encrypted_password: 'password') }
+			let!(:user2) { User.create(name: 'User2', username: 'user2', encrypted_password: 'password') }
 			let(:invalid_barter_params) do
 				{
 					users: [
 						{
 							username: 'user1',
-							items: [{ name: 'Item1', amount: 1 }]
+							items: [
+								{ name: 'Item1', amount: 1 }
+							]
 						},
 						{
 							username: 'user2',
-							items: [{ name: 'Item2', amount: 1 }]
+							items: [
+								{ name: 'Item2', amount: 1 }
+							]
 						}
 					]
 				}
 			end
 	
 			it 'returns an error if exchange does not satisfy points rules' do
-				post :barter, body: invalid_barter_params.to_json, format: :json
+				get :barter, body: invalid_barter_params.to_json, format: :json
+
 				expect(response).to have_http_status(:unprocessable_entity)
 			end
 		end

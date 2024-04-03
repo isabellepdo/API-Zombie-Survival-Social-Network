@@ -129,7 +129,7 @@ class InventoryMovementController < ApplicationController
 			item_in_table = Item.find_by_name(item['name'])
 
 			if item_in_table
-				@points_for_user_1 += (item['amout'].to_i * item_in_table.points_for_barter)
+				@points_for_user_1 += (item['amount'].to_i * item_in_table.points_for_barter)
 			else
 				render json: { error: "One or both items not found" }, status: :not_found
 				return
@@ -141,7 +141,7 @@ class InventoryMovementController < ApplicationController
 			item_in_table = Item.find_by_name(item['name'])
 
 			if item_in_table
-				@points_for_user_2 += (item['amout'].to_i * item_in_table.points_for_barter)
+				@points_for_user_2 += (item['amount'].to_i * item_in_table.points_for_barter)
 			else 
 				render json: { error: "One or both items not found" }, status: :not_found
 				return
