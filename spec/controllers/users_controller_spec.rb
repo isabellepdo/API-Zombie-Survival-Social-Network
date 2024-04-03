@@ -66,45 +66,50 @@ RSpec.describe UsersController, type: :controller do
 	end
 
 	describe 'POST #report_user' do
-    let(:whistleblower) { User.create(name: 'Deltrano', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'deltrano', encrypted_password: 'password') }
-		let(:user) { User.create(name: 'Futuro Infectado', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'infectado', encrypted_password: 'password') }
+		let!(:whistleblower) { User.create(name: 'Deltrano', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'deltrano', encrypted_password: 'password') }
+		let!(:user) { User.create(name: 'Futuro Infectado', age: 30, gender: 'male', latitude: 0, longitude: 0, health: 'healthy', username: 'infectado', encrypted_password: 'password') }
+		let(:valid_params) do
+			{
+				user: 'infectado',
+				whistleblower: 'deltrano'
+			}
+		end
 
+		context 'when user to report exists' do
+			context 'when report is successfully created' do
+				it 'returns status :ok' do
+					post :report_user, params: valid_params, format: :json
+					expect(response).to have_http_status(:ok)
+				end
+			end
 
-    context 'when user to report exists' do
-      context 'when report is successfully created' do
-        it 'returns status :ok' do
-          post :report_user, params: { id: user.id, whistleblower_id: whistleblower.id }
-          expect(response).to have_http_status(:ok)
-        end
-      end
+			context 'when report to same user has already been made' do
+				before do
+					ReportInfection.create(user_id: user.id, whistleblower_id: whistleblower.id)
+				end
 
-      context 'when report to same user has already been made' do
-        before do
-          ReportInfection.create(user_id: user.id, whistleblower_id: whistleblower.id)
-        end
+				it 'returns status :unprocessable_entity' do
+					post :report_user, params: valid_params, format: :json
+					expect(response).to have_http_status(:unprocessable_entity)
+				end
 
-        it 'returns status :unprocessable_entity' do
-          post :report_user, params: { id: user.id, whistleblower_id: whistleblower.id }
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+				it 'returns error message' do
+					post :report_user, params: valid_params, format: :json
+					expect(JSON.parse(response.body)).to eq({ 'error' => 'Your report to this user has already been made.' })
+				end
+			end
+		end
 
-        it 'returns error message' do
-          post :report_user, params: { id: user.id, whistleblower_id: whistleblower.id }
-          expect(JSON.parse(response.body)).to eq({ 'error' => 'Your report to this user has already been made.' })
-        end
-      end
-    end
+		context 'when user to report does not exist' do
+			it 'returns status :not_found' do
+				post :report_user, params: { id: 'invalid_id', whistleblower_id: whistleblower.id }
+				expect(response).to have_http_status(:not_found)
+			end
 
-    context 'when user to report does not exist' do
-      it 'returns status :not_found' do
-        post :report_user, params: { id: 'invalid_id', whistleblower_id: whistleblower.id }
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it 'returns error message' do
-        post :report_user, params: { id: 'invalid_id', whistleblower_id: whistleblower.id }
-        expect(JSON.parse(response.body)).to eq({ 'error' => 'User not found' })
-      end
-    end
-  end
+			it 'returns error message' do
+				post :report_user, params: { id: 'invalid_id', whistleblower_id: whistleblower.id }
+				expect(JSON.parse(response.body)).to eq({ 'error' => 'User not found' })
+			end
+		end
+	end
 end

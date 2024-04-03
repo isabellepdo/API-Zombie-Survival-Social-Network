@@ -28,11 +28,12 @@ class UsersController < ApplicationController
 	end
 
 	def report_user
-		if User.where(id: params[:id]).any?
-			user = User.find(params[:id])
+		user = User.find_by_username(params[:user])
+		whistleblower = User.find_by_username(params[:whistleblower])
 
-			if ReportInfection.where(user_id: user.id, whistleblower_id: params[:whistleblower_id]).empty?
-				if ReportInfection.new(user_id: user.id, whistleblower_id: params[:whistleblower_id]).save
+		if user.present? && whistleblower.present?
+			if ReportInfection.where(user_id: user.id, whistleblower_id: whistleblower.id).empty?
+				if ReportInfection.new(user_id: user.id, whistleblower_id: whistleblower.id).save
 					render json: user, status: :ok
 				else
 					render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
