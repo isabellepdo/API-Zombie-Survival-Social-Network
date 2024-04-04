@@ -15,17 +15,6 @@ O sistema consiste em uma API REST que armazena informações sobre os sobrevive
 - Escambo de bens entre usuários
 - Relatórios sobre usuários infectados, não infectados, quantidade média de itens por usuário e pontos perdidos por usuários infectados
 
-## Orientações Técnicas
-
-- Desenvolvido em Ruby on Rails (CÓDIGO-FONTE TODO EM INGLÊS)
-- Utilização de banco de dados relacional (PostgreSQL ou MySQL)
-- Sistema REST, respondendo aos verbos HTTP (POST, GET, UPDATE, etc)
-- Toda a comunicação é feita via JSON
-- Não é necessário autenticação
-- Utilização do Git para controle de versão
-- Testes automatizados
-- Documentação completa do sistema, incluindo setup, rotas, exemplos de chamadas à API e decisões arquiteturais
-
 ## Requisitos de Instalação
 
 - Ruby 2.6.3
@@ -36,62 +25,132 @@ O sistema consiste em uma API REST que armazena informações sobre os sobrevive
 
 1. Clone o repositório:
 
-git clone https://github.com/seuusuario/zssn_api.git
+    git clone https://github.com/seuusuario/zssn_api.git
 
 
 2. Instale as dependências:
 
-bundle install
+    bundle install
 
 
 3. Crie o banco de dados e execute as migrações:
 
-rails db:create
-rails db:migrate
+    rails db:create
+    rails db:migrate
 
 
 4. Execute os testes:
 
-rspec
+    rspec
 
 
 5. Inicie o servidor:
 
-rails server
+    rails server
 
 
 ## Utilização da API
 
-A documentação completa da API está disponível em [\[link_para_documentação\]](https://www.postman.com/pdoisabelle/workspace/event-organizer-api/collection/9014600-840028b4-2e03-43f5-88e6-b7595eac1f3c?action=share&creator=9014600).
+A documentação completa da API está disponível pelo Postman em [\[link_para_documentação\]](https://www.postman.com/pdoisabelle/workspace/event-organizer-api/collection/9014600-840028b4-2e03-43f5-88e6-b7595eac1f3c?action=share&creator=9014600).
 
 ## Exemplos de Chamadas à API
 
 ### Cadastro de Usuário
 
 ```json
-POST /users
+POST /users/create
 {
-  "name": "João",
+  "name": "Maria",
   "age": 30,
-  "gender": "M",
-  "latitude": 12.345,
-  "longitude": -45.678
+  "gender": "female",
+  "latitude": 123.123,
+  "longitude": 321.321,
+  "username": "maria",
+  "encrypted_password": "password"
 }
+``` 
 
 ### Atualização de Localização
 
-PATCH /users/:id/location
+PATCH /users/:id/update_location
+```json
 {
   "latitude": 12.345,
   "longitude": -45.678
 }
+```
 
-### Marcar Usuário como Infectado
+### Resportar Usuário como Infectado
 
-PATCH /users/:id/mark_as_infected
+POST /report_user
+```json
+{
+  "user": "maria",
+  "whistleblower": "joao"
+}
+```
 
 ### Adicionar Item ao Inventário
 
+POST /add_item
+```json
+{
+  "user": "maria",
+  "item": "Água",
+  "value": 1
+}
+```
+
+### Remover Item ao Inventário
+
+POST /remove_item
+```json
+{
+  "user": "maria",
+  "item": "Água",
+  "value": 1
+}
+```
+### Escambo entre Usuários
+
+POST /barter
+```json
+{
+  "users": [
+    {
+      "username": "teste1",
+      "items": [
+        {
+          "name": "Água",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "username": "teste2",
+      "items": [
+        {
+          "name": "Comida",
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}
+```
+### Relatórios
+
+####Porcentagem de Usuários Infectados
+
+    GET /percentage_of_healthy_users
+
+####Porcentagem de Usuários Infectados
+
+    GET /percentage_of_infected_users
+
+####Porcentagem de Usuários Infectados
+
+    GET /number_of_points_lost_by_infected_users
 
 
 

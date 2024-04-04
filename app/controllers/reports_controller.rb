@@ -1,11 +1,11 @@
 class ReportsController < ApplicationController
-	before_action :set_users_types, only: [:percentage_of_healthy_users, :percentage_of_non_infected_users]
+	before_action :set_users_types, only: [:percentage_of_healthy_users, :percentage_of_infected_users]
 
 	def percentage_of_healthy_users
 		render json: { percentage_of_healthy_users: (100 * @healthy_users ) / (@healthy_users + @infected_users) }
 	end
 
-	def percentage_of_non_infected_users
+	def percentage_of_infected_users
 		render json: { percentage_of_healthy_users: (100 * @infected_users ) / (@healthy_users + @infected_users) }
 	end
 
