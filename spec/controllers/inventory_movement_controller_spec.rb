@@ -14,7 +14,7 @@ RSpec.describe InventoryMovementController, type: :controller do
 			end
 
 			it 'adds an item to the inventory' do
-				get :add_item, params: valid_params, format: :json
+				post :add_item, params: valid_params, format: :json
 				expect(response).to have_http_status(:ok)
 			end
 
@@ -57,7 +57,7 @@ RSpec.describe InventoryMovementController, type: :controller do
 				user_inventory = Inventory.where(user_id: User.find_by_username('teste2').id, item_id: Item.find_by_name('Água').id).last
 				user_inventory.update_column(:amount, 3)
 
-				get :remove_item, params: valid_params, format: :json
+				post :remove_item, params: valid_params, format: :json
 				expect(response).to have_http_status(:ok)
 			end
 
@@ -67,7 +67,7 @@ RSpec.describe InventoryMovementController, type: :controller do
 				user_inventory = Inventory.where(user_id: user.id, item_id: item.id).last
 				user_inventory.update_column(:amount, 3)
 
-				get :remove_item, params: valid_params, format: :json
+				post :remove_item, params: valid_params, format: :json
 				expect(user.inventories.where(item_id: item.id).last.amount).to eq(2)
 			end
 		end
@@ -133,9 +133,9 @@ RSpec.describe InventoryMovementController, type: :controller do
 			end
 	
 			it 'updates the inventories with the correct amounts after the barter' do
-				get :add_item, params: valid_params_user1, format: :json
-				get :add_item, params: valid_params_user2, format: :json
-				get :barter, body: valid_barter_params.to_json, format: :json
+				post :add_item, params: valid_params_user1, format: :json
+				post :add_item, params: valid_params_user2, format: :json
+				post :barter, body: valid_barter_params.to_json, format: :json
 				
 				expect(user1.inventories.find_by(item_id: item1.id).amount).to eq(1)
 				expect(user1.inventories.find_by(item_id: item2.id).amount).to eq(1)
@@ -226,7 +226,7 @@ RSpec.describe InventoryMovementController, type: :controller do
 			end
 	
 			it 'returns an error if exchange does not satisfy points rules' do
-				get :barter, body: invalid_barter_params.to_json, format: :json
+				post :barter, body: invalid_barter_params.to_json, format: :json
 
 				expect(response).to have_http_status(:unprocessable_entity)
 			end

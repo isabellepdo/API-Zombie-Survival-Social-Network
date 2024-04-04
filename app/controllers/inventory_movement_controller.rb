@@ -13,7 +13,7 @@ class InventoryMovementController < ApplicationController
 			if inventory_to_be_used.present?
 				value = inventory_to_be_used.amount.to_i + params[:value].to_i
 
-				if inventory_to_be_used.update_column(:amount, value)
+				if value >= 0 && inventory_to_be_used.update_column(:amount, value)
 					render json: inventory_to_be_used, status: :ok
 				else
 					render json: { errors: inventory_to_be_used.errors.full_messages }, status: :unprocessable_entity

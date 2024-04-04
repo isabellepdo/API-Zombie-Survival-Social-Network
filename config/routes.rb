@@ -5,18 +5,14 @@ Rails.application.routes.draw do
 	#resources :users, only: [:create]
 
 	# Route for users
-	resources :users do
-		member do
-			post 'create'
-			get 'update_location'
-		end
-	end
+	post '/users/create', to: 'users#create'
+	patch '/users/:id/update_location', to: 'users#update_location'
 	post '/report_user', to: 'users#report_user'
 
 	# Routes for inventory
-	get '/add_item', to: 'inventory_movement#add_item'
-  get '/remove_item', to: 'inventory_movement#remove_item'
-	get '/barter', to: 'inventory_movement#barter'
+	post '/add_item', to: 'inventory_movement#add_item'
+  post '/remove_item', to: 'inventory_movement#remove_item'
+	post '/barter', to: 'inventory_movement#barter'
 
 	# Routes for reports
 	get '/percentage_of_healthy_users', to: 'reports#percentage_of_healthy_users'
