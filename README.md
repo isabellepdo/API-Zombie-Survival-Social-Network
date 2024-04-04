@@ -72,8 +72,8 @@ POST /users/create
 
 ### Atualização de Localização
 
-PATCH /users/:id/update_location
 ```json
+PATCH /users/:id/update_location
 {
   "latitude": 12.345,
   "longitude": -45.678
@@ -82,8 +82,8 @@ PATCH /users/:id/update_location
 
 ### Resportar Usuário como Infectado
 
-POST /report_user
 ```json
+POST /report_user
 {
   "user": "maria",
   "whistleblower": "joao"
@@ -92,8 +92,8 @@ POST /report_user
 
 ### Adicionar Item ao Inventário
 
-POST /add_item
 ```json
+POST /add_item
 {
   "user": "maria",
   "item": "Água",
@@ -103,8 +103,8 @@ POST /add_item
 
 ### Remover Item ao Inventário
 
-POST /remove_item
 ```json
+POST /remove_item
 {
   "user": "maria",
   "item": "Água",
@@ -113,8 +113,8 @@ POST /remove_item
 ```
 ### Escambo entre Usuários
 
-POST /barter
 ```json
+POST /barter
 {
   "users": [
     {
@@ -140,15 +140,15 @@ POST /barter
 ```
 ### Relatórios
 
-####Porcentagem de Usuários Infectados
+Porcentagem de Usuários Infectados
 
     GET /percentage_of_healthy_users
 
-####Porcentagem de Usuários Infectados
+Porcentagem de Usuários Infectados
 
     GET /percentage_of_infected_users
 
-####Porcentagem de Usuários Infectados
+Porcentagem de Usuários Infectados
 
     GET /number_of_points_lost_by_infected_users
 
