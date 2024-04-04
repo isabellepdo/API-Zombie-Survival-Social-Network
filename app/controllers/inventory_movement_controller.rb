@@ -54,14 +54,13 @@ class InventoryMovementController < ApplicationController
 	
 					user_inventory_item = Inventory.where(user_id: @user1.id, item_id: item_in_table.id).last
 					final_quantity_user = user_inventory_item.amount.to_i - item['amount'].to_i
+	
 					user_inventory_item.update_column(:amount, final_quantity_user)
-
 					raise ActiveRecord::Rollback unless user_inventory_item.save
 	
 					other_user_inventory_item = Inventory.where(user_id: @user2.id, item_id: item_in_table.id).last
 					final_quantity_other_user = other_user_inventory_item.amount.to_i + item['amount'].to_i
 					other_user_inventory_item.update_column(:amount, final_quantity_other_user)
-	
 					raise ActiveRecord::Rollback unless other_user_inventory_item.save
 				end
 	
@@ -70,20 +69,19 @@ class InventoryMovementController < ApplicationController
 	
 					user_inventory_item = Inventory.where(user_id: @user2.id, item_id: item_in_table.id).last
 					final_quantity_user = user_inventory_item.amount.to_i - item['amount'].to_i
-					user_inventory_item.update_column(:amount, final_quantity_user)
 	
+					user_inventory_item.update_column(:amount, final_quantity_user)
 					raise ActiveRecord::Rollback unless user_inventory_item.save
 	
 					other_user_inventory_item = Inventory.where(user_id: @user1.id, item_id: item_in_table.id).last
 					final_quantity_other_user = other_user_inventory_item.amount.to_i + item['amount'].to_i
 					other_user_inventory_item.update_column(:amount, final_quantity_other_user)
-	
 					raise ActiveRecord::Rollback unless other_user_inventory_item.save
 				end
 			end
 	
 			render json: { message: "Trade successful" }, status: :ok
-		rescue
+		rescue ActiveRecord::Rollback
 			render json: { error: "Failed to update inventories" }, status: :unprocessable_entity
 		end
 	end
@@ -119,6 +117,12 @@ class InventoryMovementController < ApplicationController
 		# Check if both users exist
 		unless @user1 && @user2
 			render json: { error: "One or both users not found" }, status: :not_found
+			return
+		end
+
+		# Check if users are healthy
+		unless @user1.healthy? && @user2.healthy?
+			render json: { error: "Some of the users are not healthy" }, status: :not_found
 			return
 		end
 	end
